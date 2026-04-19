@@ -34,6 +34,15 @@ def intersect_dataframe_ids(dfs: list[pd.DataFrame], id_name: str) -> pd.DataFra
 
     return df_filtered_stacked
 
+def sum_rows_per_id(df):
+    df_totals = df.groupby(id_name).sum().reset_index()
+
+def sum_columns_to_grand_total(df):
+    df['Grand Total'] = df_totals.iloc[:, 1:].sum(axis=1)
+
+def sort_highest_desc():
+    df_sorted = df_totals.sort_values(by='Grand Total', ascending=False)
+
 if __name__ == "__main__":
     id_name = 'Employee ID'
 
@@ -52,8 +61,13 @@ if __name__ == "__main__":
     is_correct = (weekly_bunny_ids[id_name].value_counts() == len(dfs)).all()
     print(f"Did every bunny show up in all files? {is_correct}")
 
-    # Total number unique Employee IDs
-    num_weekly_bunnies = weekly_bunny_ids[id_name].nunique()
+    # Find the bunny with the highest total of eggs of any color 
+    # Total all columns and rows per each unique Employee ID into a new 2D dataframe
+    sum_rows_df = sum_row_per_id(weekly_bunny_ids)
+    print(sum_rows_df)
 
-    # Print total number of good bunnies
-    print(num_weekly_bunnies)
+    sum_cols_df = sum_columns_to_grand_total(sum_rows_df)
+    print(sum_cols_df)
+
+    sorted_by_highest_df = sort_highest_desc()
+    print(sorted_by_highest_df)
